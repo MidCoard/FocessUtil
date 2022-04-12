@@ -5,6 +5,9 @@ package top.focess.util.option.type;
  */
 public class IntegerOptionType extends ExceptionOptionType<Integer> {
 
+    /**
+     * Single Instance for IntegerOptionType
+     */
     public static final IntegerOptionType INTEGER_OPTION_TYPE = new IntegerOptionType();
 
     @Override

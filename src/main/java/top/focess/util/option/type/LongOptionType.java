@@ -5,6 +5,10 @@ package top.focess.util.option.type;
  */
 public class LongOptionType extends ExceptionOptionType<Long> {
 
+
+    /**
+     * Single Instance for LongOptionType
+     */
     public static final LongOptionType LONG_OPTION_TYPE = new LongOptionType();
 
     @Override

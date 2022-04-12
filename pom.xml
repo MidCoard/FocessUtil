@@ -7,7 +7,7 @@
     <url>https://github.com/MidCoard/FocessUtil</url>
     <description>Focess Util Library</description>
     <groupId>top.focess</groupId>
-    <artifactId>FocessUtil</artifactId>
+    <artifactId>focess-util</artifactId>
     <version>1.0.1</version>
 
     <distributionManagement>

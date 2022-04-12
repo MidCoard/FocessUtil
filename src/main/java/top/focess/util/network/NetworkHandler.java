@@ -71,11 +71,18 @@ public class NetworkHandler {
     private final OkHttpClient client;
     private final List<HttpHandler> handlers = Lists.newArrayList();
 
+    /**
+     * Initialize a NetworkHandler with specify options
+     * @param options the options
+     */
     public NetworkHandler(Options options) {
         this.client = new OkHttpClient.Builder().connectTimeout(options.connectTimeout, TimeUnit.SECONDS).writeTimeout(options.writeTimeout, TimeUnit.SECONDS).readTimeout(options.readTimeout, TimeUnit.SECONDS).sslSocketFactory(SSL_CONTEXT.getSocketFactory(), X_509_TRUST_MANAGERS[0]).hostnameVerifier((hostname, session) -> true).build();
     }
 
 
+    /**
+     * Initialize a NetworkHandler with default options
+     */
     public NetworkHandler() {
         this(Options.ofNull());
     }

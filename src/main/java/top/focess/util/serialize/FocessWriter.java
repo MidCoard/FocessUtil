@@ -2,7 +2,6 @@ package top.focess.util.serialize;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import top.focess.qq.core.serialize.SimpleFocessWriter;
 
 import java.io.IOException;
 import java.io.OutputStream;

@@ -72,7 +72,7 @@ public class NetworkHandler {
     private final List<HttpHandler> handlers = Lists.newArrayList();
 
     /**
-     * Initialize a NetworkHandler with specify options
+     * Initialize a NetworkHandler with specified options
      * @param options the options
      */
     public NetworkHandler(Options options) {

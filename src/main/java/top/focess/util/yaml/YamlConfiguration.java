@@ -328,10 +328,10 @@ public class YamlConfiguration implements SectionMap {
      * @param key the key
      * @return the value of the key-value pair as list or an empty list if the key-value pair does not exist
      */
-    public List<?> getListOrEmpty(final String key) {
+    public <T> List<T> getListOrEmpty(final String key) {
         try {
             final List<?> value = SectionMap.super.get(key);
-            return value.stream().map(YamlConfiguration::read).collect(Collectors.toList());
+            return value.stream().map(i -> (T)YamlConfiguration.read(i)).collect(Collectors.toList());
         }catch (final Exception e) {
             return Lists.newArrayList();
         }

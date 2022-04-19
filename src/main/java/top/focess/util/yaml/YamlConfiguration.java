@@ -312,6 +312,17 @@ public class YamlConfiguration implements SectionMap {
         this.values.put(key, write(value));
     }
 
+    /**
+     * Get the value of the key-value pair as list
+     * @param key the key
+     * @return the value of the key-value pair as list
+     * @throws ClassCastException if the value is not a list
+     */
+    public List<?> getList(final String key) {
+        final List<?> value = SectionMap.super.get(key);
+        return value.stream().map(YamlConfiguration::read).collect(Collectors.toList());
+    }
+
     @Nullable
     @Override
     public <T> T get(final String key) {

@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * This is an Easy Util Class to store two Instances.
@@ -70,5 +71,21 @@ public class Pair<K, V> implements Serializable {
     @Override
     public String toString() {
         return "(" + this.key + ',' + this.value + ')';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Pair<?, ?> pair = (Pair<?, ?>) o;
+        if (!Objects.equals(key, pair.key)) return false;
+        return Objects.equals(value, pair.value);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = key != null ? key.hashCode() : 0;
+        result = 31 * result + (value != null ? value.hashCode() : 0);
+        return result;
     }
 }

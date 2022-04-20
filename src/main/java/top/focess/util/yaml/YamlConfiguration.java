@@ -315,12 +315,19 @@ public class YamlConfiguration implements SectionMap {
     /**
      * Get the value of the key-value pair as list
      * @param key the key
-     * @return the value of the key-value pair as list
-     * @throws ClassCastException if the value is not a list
+     * @return the value of the key-value pair as list, or null if the key does not exist
      */
-    public List<?> getList(final String key) {
-        final List<?> value = SectionMap.super.get(key);
-        return value.stream().map(YamlConfiguration::read).collect(Collectors.toList());
+    @Nullable
+    public <T> List<T> getList(final String key) {
+        final List<T> value;
+        try {
+           value = SectionMap.super.get(key);
+        } catch (final Exception e) {
+            return Lists.newArrayList(Collections.singleton((T)YamlConfiguration.read(SectionMap.super.get(key))));
+        }
+        if (value == null)
+            return null;
+        return value.stream().map(i -> (T)YamlConfiguration.read(i)).collect(Collectors.toList());
     }
 
     /**
@@ -330,8 +337,8 @@ public class YamlConfiguration implements SectionMap {
      */
     public <T> List<T> getListOrEmpty(final String key) {
         try {
-            final List<?> value = SectionMap.super.get(key);
-            return value.stream().map(i -> (T)YamlConfiguration.read(i)).collect(Collectors.toList());
+            List<T> ret = getList(key);
+            return ret == null ? Lists.newArrayList() : ret;
         }catch (final Exception e) {
             return Lists.newArrayList();
         }

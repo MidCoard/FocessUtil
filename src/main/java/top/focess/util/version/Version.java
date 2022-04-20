@@ -1,11 +1,18 @@
 package top.focess.util.version;
 
+import com.google.common.collect.Maps;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import top.focess.util.serialize.FocessSerializable;
+
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Represents a version of a plugin.
  */
-public class Version {
+public class Version implements FocessSerializable,Comparable<Version> {
     /**
      * Represents an alpha version of a plugin.
      */
@@ -138,6 +145,63 @@ public class Version {
         return this.build;
     }
 
+    /**
+     * Indicate whether this version is greater than the specified version
+     *
+     * <p>
+     * Note: This method is equivalent to {@code this.compareTo(version) > 0}.
+     * this method return true also indicate {@link #lower(Version)} and {@link #equals(Object)} return false.
+     *
+     *
+     * @param version the version to compare to
+     * @return true if this version is greater than the specified version, false otherwise
+     * @see #lower(Version)
+     * @see #equals(Object)
+     * @see #compareTo(Version)
+     */
+    public boolean higher(@NonNull final Version version) {
+        return this.compareTo(version) > 0;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Version version = (Version) o;
+
+        if (major != version.major) return false;
+        if (minor != version.minor) return false;
+        if (revision != version.revision) return false;
+        return Objects.equals(build, version.build);
+    }
+
+    /**
+     * Indicate whether this version is lower than the specified version
+     *
+     * <p>
+     * Note: This method is equivalent to {@code version.higher(this)}.
+     * this method return true also indicate {@link #higher(Version)} (Version)} and {@link #equals(Object)} return false.
+     *
+     * @param version the version to compare to
+     * @return true if this version is lower than the specified version, false otherwise
+     * @see #higher(Version)
+     * @see #equals(Object)
+     * @see #compareTo(Version)
+     */
+    public boolean lower(@NonNull final Version version) {
+        return version.higher(this);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = major;
+        result = 31 * result + minor;
+        result = 31 * result + revision;
+        result = 31 * result + (build != null ? build.hashCode() : 0);
+        return result;
+    }
+
     @Override
     public String toString() {
         if (this.length == 1)
@@ -149,5 +213,34 @@ public class Version {
         else if (this.length == 4)
             return this.major + "." + this.minor + "." + this.revision + "." + this.build;
         throw new IllegalStateException("Invalid version length: " + this.length);
+    }
+
+    @Nullable
+    @Override
+    public Map<String, Object> serialize() {
+        Map<String,Object> map = Maps.newHashMap();
+        map.put("version", toString());
+        return map;
+    }
+
+    public static Version deserialize(Map<String,Object> map) {
+        return new Version((String) map.get("version"));
+    }
+
+    @Override
+    public int compareTo(@NotNull Version version) {
+        if (this.getMajor() != version.getMajor())
+            return Integer.compare(this.getMajor(), version.getMajor());
+        if (this.getMinor() != version.getMinor())
+            return Integer.compare(this.getMinor() , version.getMinor());
+        if (this.getRevision() != version.getRevision())
+            return Integer.compare(this.getRevision() , version.getRevision());
+        if (Objects.equals(this.getBuild(), version.getBuild()))
+            return 0;
+        if (this.getBuild() == null)
+            return -1;
+        if (version.getBuild() == null)
+            return 1;
+        return this.getBuild().compareTo(version.getBuild());
     }
 }

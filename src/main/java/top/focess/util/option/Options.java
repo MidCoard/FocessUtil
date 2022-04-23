@@ -16,6 +16,11 @@ public class Options {
     private final Map<String, Option> options = Maps.newHashMap();
 
     /**
+     * Use {@link #parse(String[], OptionParserClassifier...)} to parse the arguments into options
+     */
+    private Options(){}
+
+    /**
      * Used to parse the arguments into options
      * @param args the arguments
      * @param classifiers the classifiers which define how to parse the arguments into option

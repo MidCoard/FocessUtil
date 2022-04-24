@@ -64,6 +64,8 @@ public class SimpleFocessWriter extends FocessWriter {
 
     private final List<Byte> data = Lists.newArrayList();
 
+    protected SimpleFocessWriter() {}
+
     private void writeInt(int v) {
         for (int i = 0; i < 4; i++) {
             this.data.add((byte) (v & 0xFF));

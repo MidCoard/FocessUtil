@@ -113,7 +113,7 @@ public class SimpleFocessReader extends FocessReader {
 
     private int pointer;
 
-    public SimpleFocessReader(final byte[] bytes) {
+    protected SimpleFocessReader(final byte[] bytes) {
         this.bytes = bytes;
         this.pointer = 0;
     }

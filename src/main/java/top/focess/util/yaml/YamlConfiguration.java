@@ -344,6 +344,15 @@ public class YamlConfiguration implements SectionMap {
         }
     }
 
+    /**
+     * Set the list value of the key-value pair
+     * @param key the key
+     * @param value the list value
+     */
+    public void setList(final String key, final List<?> value) {
+        this.values.put(key, value.stream().map(YamlConfiguration::write).collect(Collectors.toList()));
+    }
+
     @Nullable
     @Override
     public <T> T get(final String key) {

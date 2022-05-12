@@ -303,7 +303,7 @@ public class YamlConfiguration implements SectionMap {
     @Override
     public YamlConfigurationSection createSection(final String key) {
         final Map<String, Object> values = Maps.newHashMap();
-        this.set(key, values);
+        this.values.put(key, values);
         return new YamlConfigurationSection(this, values);
     }
 
@@ -378,14 +378,24 @@ public class YamlConfiguration implements SectionMap {
         }
     }
 
+    private Map<String,Object> getAsMap(final String key) {
+        final Object value = this.values.get(key);
+        if (value == null)
+            return null;
+        if (value instanceof Map) {
+            Map<String,Object> map = (Map<String,Object>)value;
+            map.replaceAll((k,v) -> read(v));
+            return map;
+        }
+        throw new IllegalStateException("The value of the key " + key + " is not a map");
+    }
+
     @Override
     public YamlConfigurationSection getSection(final String key) {
-        final Object value = this.get(key);
+        final Map<String, Object> value = this.getAsMap(key);
         if (value == null)
             return this.createSection(key);
-        if (value instanceof Map)
-            return new YamlConfigurationSection(this, (Map<String, Object>) value);
-        throw new IllegalStateException("This " + key + " is not a valid section.");
+        return new YamlConfigurationSection(this, value);
     }
 
     @Override

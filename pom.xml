@@ -8,7 +8,7 @@
     <description>Focess Util Library</description>
     <groupId>top.focess</groupId>
     <artifactId>focess-util</artifactId>
-    <version>1.1.5</version>
+    <version>1.1.6</version>
 
     <distributionManagement>
         <snapshotRepository>

@@ -91,4 +91,9 @@ public class JSON extends JSONObject implements SectionMap {
     public String toString() {
         return this.values.toString();
     }
+
+    @Override
+    public JSON getJSON(String key) {
+        return this.getSection(key);
+    }
 }

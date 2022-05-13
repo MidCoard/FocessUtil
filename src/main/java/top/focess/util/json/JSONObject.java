@@ -117,4 +117,8 @@ public abstract class JSONObject {
         throw new UnsupportedOperationException();
     }
 
+    public JSON getJSON(final String key) {
+        throw new UnsupportedOperationException();
+    }
+
 }

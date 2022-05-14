@@ -301,7 +301,7 @@ public class YamlConfiguration implements SectionMap {
                     final Object v = map.get("value");
                     if (cls.isEnum()) {
                         Class<V> enumClass = (Class<V>) cls;
-                        return Enum.valueOf(enumClass, ((Enum<?>)v).name());
+                        return Enum.valueOf(enumClass, v.toString());
                     }
                     if (v instanceof List && Boolean.parseBoolean(String.valueOf(map.get("array")))) {
                         final List list = (List) v;

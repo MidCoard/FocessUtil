@@ -221,7 +221,7 @@ public class YamlConfiguration implements SectionMap {
             ret.put("class", "!!" + value.getClass().getName());
             Map<String, Object> data = ((FocessSerializable) value).serialize();
             if (data != null) {
-                ret.put("value", data);
+                ret.put("value", write(data));
                 ret.put("serialize", true);
                 return ret;
             }
@@ -275,7 +275,7 @@ public class YamlConfiguration implements SectionMap {
                         return array;
                     }
                     if (v instanceof Map && FocessSerializable.class.isAssignableFrom(cls)) {
-                        final Map<String, Object> data = (Map<String, Object>) v;
+                        final Map<String, Object> data = (Map<String, Object>) read(v);
                         if (Boolean.parseBoolean(String.valueOf(map.get("serialize")))) {
                             final Method method = cls.getMethod("deserialize", Map.class);
                             return method.invoke(null, data);

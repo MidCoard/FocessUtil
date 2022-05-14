@@ -8,12 +8,12 @@ This is a library for Focess.
 <dependency>
     <groupId>top.focess</groupId>
     <artifactId>focess-util</artifactId>
-    <version>1.1.7</version>
+    <version>1.1.8</version>
 </dependency>
 ```
 
 Gradle:
 
 ```gradle
-implementation 'top.focess:focess-util:1.1.7'
+implementation 'top.focess:focess-util:1.1.8'
 ```

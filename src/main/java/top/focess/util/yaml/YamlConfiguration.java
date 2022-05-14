@@ -103,13 +103,18 @@ public class YamlConfiguration implements SectionMap {
         CLASS_RESERVED_HANDLER_MAP.put(ConcurrentHashMap.class, new ReservedHandler<ConcurrentHashMap>() {
             @Override
             public Object write(final ConcurrentHashMap map) {
-                return map;
+                HashMap<String,Object> ret = new HashMap<>();
+                for (Object key : map.keySet())
+                    ret.put(key.toString(), YamlConfiguration.write(map.get(key)));
+                return ret;
             }
 
             @Override
             public ConcurrentHashMap read(final Object value) {
-                final Map map = (Map) value;
-                return new ConcurrentHashMap(map);
+                final ConcurrentHashMap ret = new ConcurrentHashMap();
+                for (final Object key : ((Map) value).keySet())
+                    ret.put(key, YamlConfiguration.read(((Map) value).get(key)));
+                return ret;
             }
         });
 
@@ -147,12 +152,18 @@ public class YamlConfiguration implements SectionMap {
         CLASS_RESERVED_HANDLER_MAP.put(HashMap.class, new ReservedHandler<HashMap>() {
             @Override
             public Object write(final HashMap map) {
-                return map;
+                HashMap<String,Object> ret = new HashMap<>();
+                for (Object key : map.keySet())
+                    ret.put(key.toString(), YamlConfiguration.write(map.get(key)));
+                return ret;
             }
 
             @Override
             public HashMap read(final Object value) {
-                return (HashMap) value;
+                final HashMap ret = new HashMap();
+                for (final Object key : ((Map) value).keySet())
+                    ret.put(key, YamlConfiguration.read(((Map) value).get(key)));
+                return ret;
             }
         });
     }

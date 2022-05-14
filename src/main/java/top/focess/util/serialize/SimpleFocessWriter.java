@@ -133,8 +133,10 @@ public class SimpleFocessWriter extends FocessWriter {
         else if (cls.isEnum()) {
             this.writeByte(C_ENUM);
             this.writeString(cls.getName());
-        }
-        else if (FocessSerializable.class.isAssignableFrom(cls)) {
+        } else if (cls.getSuperclass().isEnum()) {
+            this.writeByte(C_ENUM);
+            this.writeString(cls.getSuperclass().getName());
+        } else if (FocessSerializable.class.isAssignableFrom(cls)) {
             if (isSerializable)
                 this.writeByte(C_SERIALIZABLE);
             else this.writeByte(C_OBJECT);
@@ -171,7 +173,7 @@ public class SimpleFocessWriter extends FocessWriter {
             this.writeString((String) o);
         else if (o instanceof Character)
             this.writeChar((Character) o);
-        else if (o.getClass().isEnum())
+        else if (o.getClass().isEnum() || o.getClass().getSuperclass().isEnum())
             this.writeString(((Enum<?>) o).name());
         else if (o instanceof FocessSerializable) {
             if (data != null)

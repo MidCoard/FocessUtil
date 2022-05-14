@@ -236,6 +236,12 @@ public class YamlConfiguration implements SectionMap {
             ret.put("value", ((Enum<?>)value).name());
             return ret;
         }
+        if (value.getClass().getSuperclass().isEnum()) {
+            final Map<String, Object> ret = Maps.newHashMap();
+            ret.put("class", "!!" + value.getClass().getSuperclass().getName());
+            ret.put("value", ((Enum<?>)value).name());
+            return ret;
+        }
         if (value.getClass().isArray()) {
             final Map<String, Object> ret = Maps.newHashMap();
             ret.put("class", "!!" + value.getClass().getComponentType().getName());

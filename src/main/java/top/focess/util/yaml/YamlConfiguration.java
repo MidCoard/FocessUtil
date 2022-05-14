@@ -166,6 +166,25 @@ public class YamlConfiguration implements SectionMap {
                 return ret;
             }
         });
+
+        CLASS_RESERVED_HANDLER_MAP.put(LinkedHashMap.class, new ReservedHandler<LinkedHashMap>() {
+
+            @Override
+            public Object write(LinkedHashMap map) {
+                HashMap<String,Object> ret = new HashMap<>();
+                for (Object key : map.keySet())
+                    ret.put(key.toString(), YamlConfiguration.write(map.get(key)));
+                return ret;
+            }
+
+            @Override
+            public LinkedHashMap read(Object value) {
+                final LinkedHashMap ret = new LinkedHashMap();
+                for (final Object key : ((Map) value).keySet())
+                    ret.put(key, YamlConfiguration.read(((Map) value).get(key)));
+                return ret;
+            }
+        });
     }
 
     private final Map<String, Object> values;
@@ -272,7 +291,7 @@ public class YamlConfiguration implements SectionMap {
             if (map.containsKey("class") && map.containsKey("value")) {
                 final String className = map.get("class").toString().substring(2);
                 try {
-                    final Class<?> cls = SimpleFocessReader.getDefaultClassFinder().forName(className);
+                    final Class<?> cls = SimpleFocessReader.getDefaultClassFinder().forName0(className);
                     final Object v = map.get("value");
                     if (cls.isEnum()) {
                         Class<V> enumClass = (Class<V>) cls;
@@ -286,10 +305,10 @@ public class YamlConfiguration implements SectionMap {
                         return array;
                     }
                     if (v instanceof Map && FocessSerializable.class.isAssignableFrom(cls)) {
-                        final Map<String, Object> data = (Map<String, Object>) read(v);
+                        final Map<String, Object> data = (Map<String, Object>) v;
                         if (Boolean.parseBoolean(String.valueOf(map.get("serialize")))) {
                             final Method method = cls.getMethod("deserialize", Map.class);
-                            return method.invoke(null, data);
+                            return method.invoke(null, read(data));
                         }
                         final Object o = PROVIDER.newInstance(cls);
                         for (final String key : data.keySet()) {

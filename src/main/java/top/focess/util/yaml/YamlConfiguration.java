@@ -418,11 +418,8 @@ public class YamlConfiguration implements SectionMap {
         final Object value = this.values.get(key);
         if (value == null)
             return null;
-        if (value instanceof Map) {
-            Map<String,Object> map = (Map<String,Object>)value;
-            map.replaceAll((k,v) -> read(v));
-            return map;
-        }
+        if (value instanceof Map)
+            return (Map<String, Object>) value;
         throw new IllegalStateException("The value of the key " + key + " is not a map");
     }
 

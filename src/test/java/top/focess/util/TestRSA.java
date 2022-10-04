@@ -10,7 +10,7 @@ public class TestRSA {
         RSAKeypair keypair = RSA.genRSAKeypair();
         String publicKey = keypair.getPublicKey();
         String privateKey = keypair.getPrivateKey();
-        String message = "Hello World!";
+        String message = "中文!";
         String encrypted = RSA.encryptRSA(message, publicKey);
         String decrypted = RSA.decryptRSA(encrypted, privateKey);
         Assertions.assertEquals(message, decrypted);

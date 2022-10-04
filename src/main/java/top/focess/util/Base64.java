@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 public class Base64 {
 
     /**
-     * Used to encode the data with base64 and {@link StandardCharsets#ISO_8859_1} coded
+     * Used to encode the data with base64 and {@link StandardCharsets#UTF_8} coded
      *
      * @param bytes the data need to be encoded
      * @return the encoded data with base64
@@ -19,7 +19,7 @@ public class Base64 {
     @NotNull
     @Contract("_ -> new")
     public static String encodeBase64(final byte[] bytes) {
-        return new String(java.util.Base64.getEncoder().encode(bytes), StandardCharsets.ISO_8859_1);
+        return new String(java.util.Base64.getEncoder().encode(bytes), StandardCharsets.UTF_8);
     }
 
     /**
@@ -29,6 +29,6 @@ public class Base64 {
      * @return the decoded data with base64
      */
     public static byte[] decodeBase64(final String value) {
-        return java.util.Base64.getDecoder().decode(value);
+        return java.util.Base64.getDecoder().decode(value.getBytes(StandardCharsets.UTF_8));
     }
 }

@@ -59,7 +59,7 @@ public class RSA {
             PublicKey publicKey = getPublicKey(key);
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-            int inputLen = data.getBytes().length;
+            int inputLen = data.getBytes(StandardCharsets.UTF_8).length;
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             int offset = 0;
             byte[] cache;
@@ -67,9 +67,9 @@ public class RSA {
             // 对数据分段加密
             while (inputLen - offset > 0) {
                 if (inputLen - offset > MAX_ENCRYPT_BLOCK) {
-                    cache = cipher.doFinal(data.getBytes(), offset, MAX_ENCRYPT_BLOCK);
+                    cache = cipher.doFinal(data.getBytes(StandardCharsets.UTF_8), offset, MAX_ENCRYPT_BLOCK);
                 } else {
-                    cache = cipher.doFinal(data.getBytes(), offset, inputLen - offset);
+                    cache = cipher.doFinal(data.getBytes(StandardCharsets.UTF_8), offset, inputLen - offset);
                 }
                 out.write(cache, 0, cache.length);
                 i++;
@@ -139,7 +139,7 @@ public class RSA {
             PrivateKey key = RSA_KEY_FACTORY.generatePrivate(keySpec);
             Signature signature = Signature.getInstance("MD5withRSA");
             signature.initSign(key);
-            signature.update(data.getBytes());
+            signature.update(data.getBytes(StandardCharsets.UTF_8));
             return Base64.encodeBase64(signature.sign());
         } catch (Exception e) {
             return "";
@@ -161,7 +161,7 @@ public class RSA {
             PublicKey key = RSA_KEY_FACTORY.generatePublic(keySpec);
             Signature signature = Signature.getInstance("MD5withRSA");
             signature.initVerify(key);
-            signature.update(data.getBytes());
+            signature.update(data.getBytes(StandardCharsets.UTF_8));
             return signature.verify(Base64.decodeBase64(sign));
         } catch (Exception e) {
             return false;

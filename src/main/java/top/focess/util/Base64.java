@@ -18,7 +18,7 @@ public class Base64 {
      */
     @NotNull
     @Contract("_ -> new")
-    public static String base64Encode(final byte[] bytes) {
+    public static String encodeBase64(final byte[] bytes) {
         return new String(java.util.Base64.getEncoder().encode(bytes), StandardCharsets.ISO_8859_1);
     }
 
@@ -28,7 +28,7 @@ public class Base64 {
      * @param value the data need to be decoded
      * @return the decoded data with base64
      */
-    public static byte[] base64Decode(final String value) {
+    public static byte[] decodeBase64(final String value) {
         return java.util.Base64.getDecoder().decode(value);
     }
 }

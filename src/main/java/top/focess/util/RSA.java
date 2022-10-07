@@ -36,13 +36,13 @@ public class RSA {
      */
     public static RSAKeypair genRSAKeypair() {
         KeyPair keyPair = RSA_KEY_PAIR_GENERATOR.generateKeyPair();
-        String publicKey = Base64.encodeBase64(keyPair.getPublic().getEncoded());
-        String privateKey = Base64.encodeBase64(keyPair.getPrivate().getEncoded());
+        String publicKey = new String(Base64.encodeBase64(keyPair.getPublic().getEncoded()),StandardCharsets.ISO_8859_1);
+        String privateKey = new String(Base64.encodeBase64(keyPair.getPrivate().getEncoded()), StandardCharsets.ISO_8859_1);
         return new RSAKeypair(publicKey, privateKey);
     }
 
     private static PublicKey getPublicKey(String publicKey) throws Exception {
-        byte[] decodedKey = Base64.decodeBase64(publicKey);
+        byte[] decodedKey = Base64.decodeBase64(publicKey.getBytes(StandardCharsets.ISO_8859_1));
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decodedKey);
         return RSA_KEY_FACTORY.generatePublic(keySpec);
     }
@@ -54,12 +54,12 @@ public class RSA {
      * @param key the RSA public key
      * @return the encrypted data
      */
-    public static String encryptRSA(String data, String key) {
+    public static byte[] encryptRSA(byte[] data, String key) {
         try {
             PublicKey publicKey = getPublicKey(key);
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-            int inputLen = data.getBytes(StandardCharsets.UTF_8).length;
+            int inputLen = data.length;
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             int offset = 0;
             byte[] cache;
@@ -67,9 +67,9 @@ public class RSA {
             // 对数据分段加密
             while (inputLen - offset > 0) {
                 if (inputLen - offset > MAX_ENCRYPT_BLOCK) {
-                    cache = cipher.doFinal(data.getBytes(StandardCharsets.UTF_8), offset, MAX_ENCRYPT_BLOCK);
+                    cache = cipher.doFinal(data, offset, MAX_ENCRYPT_BLOCK);
                 } else {
-                    cache = cipher.doFinal(data.getBytes(StandardCharsets.UTF_8), offset, inputLen - offset);
+                    cache = cipher.doFinal(data, offset, inputLen - offset);
                 }
                 out.write(cache, 0, cache.length);
                 i++;
@@ -79,12 +79,12 @@ public class RSA {
             out.close();
             return Base64.encodeBase64(encryptedData);
         } catch (Exception e) {
-            return "";
+            return new byte[0];
         }
     }
 
     private static PrivateKey getPrivateKey(String privateKey) throws Exception {
-        byte[] decodedKey = Base64.decodeBase64(privateKey);
+        byte[] decodedKey = Base64.decodeBase64(privateKey.getBytes(StandardCharsets.ISO_8859_1));
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decodedKey);
         return RSA_KEY_FACTORY.generatePrivate(keySpec);
     }
@@ -96,7 +96,7 @@ public class RSA {
      * @param key the RSA private key
      * @return the decrypted data
      */
-    public static String decryptRSA(String data,String key) {
+    public static byte[] decryptRSA(byte[] data,String key) {
         try {
             PrivateKey privateKey = getPrivateKey(key);
             Cipher cipher = Cipher.getInstance("RSA");
@@ -119,9 +119,9 @@ public class RSA {
             }
             byte[] decryptedData = out.toByteArray();
             out.close();
-            return new String(decryptedData, StandardCharsets.UTF_8);
+            return decryptedData;
         } catch (Exception e) {
-            return "";
+            return new byte[0];
         }
     }
 
@@ -132,17 +132,17 @@ public class RSA {
      * @param k the RSA private key
      * @return the signed data
      */
-    public static String sign(String data, String k) {
+    public static byte[] sign(byte[] data, String k) {
         try {
             byte[] keyBytes = getPrivateKey(k).getEncoded();
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
             PrivateKey key = RSA_KEY_FACTORY.generatePrivate(keySpec);
             Signature signature = Signature.getInstance("MD5withRSA");
             signature.initSign(key);
-            signature.update(data.getBytes(StandardCharsets.UTF_8));
+            signature.update(data);
             return Base64.encodeBase64(signature.sign());
         } catch (Exception e) {
-            return "";
+            return new byte[0];
         }
     }
 
@@ -154,14 +154,14 @@ public class RSA {
      * @param sign the sign to verify
      * @return true if the sign is valid, false otherwise
      */
-    public static boolean verify(String data, String k, String sign) {
+    public static boolean verify(byte[] data, String k, byte[] sign) {
         try {
             byte[] keyBytes = getPublicKey(k).getEncoded();
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
             PublicKey key = RSA_KEY_FACTORY.generatePublic(keySpec);
             Signature signature = Signature.getInstance("MD5withRSA");
             signature.initVerify(key);
-            signature.update(data.getBytes(StandardCharsets.UTF_8));
+            signature.update(data);
             return signature.verify(Base64.decodeBase64(sign));
         } catch (Exception e) {
             return false;

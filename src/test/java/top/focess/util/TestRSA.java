@@ -3,6 +3,8 @@ package top.focess.util;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
+
 public class TestRSA {
 
     @Test
@@ -11,8 +13,8 @@ public class TestRSA {
         String publicKey = keypair.getPublicKey();
         String privateKey = keypair.getPrivateKey();
         String message = "中文!";
-        String encrypted = RSA.encryptRSA(message, publicKey);
-        String decrypted = RSA.decryptRSA(encrypted, privateKey);
+        byte[] encrypted = RSA.encryptRSA(message.getBytes(), publicKey);
+        String decrypted = new String(RSA.decryptRSA(encrypted, privateKey));
         Assertions.assertEquals(message, decrypted);
     }
 
@@ -22,7 +24,15 @@ public class TestRSA {
         String publicKey = keypair.getPublicKey();
         String privateKey = keypair.getPrivateKey();
         String message = "Hello World!";
-        String sign = RSA.sign(message, privateKey);
-        Assertions.assertTrue(RSA.verify(message, publicKey, sign));
+        byte[] sign = RSA.sign(message.getBytes(), privateKey);
+        Assertions.assertTrue(RSA.verify(message.getBytes(), publicKey, sign));
+    }
+
+    @Test
+    public void testBase64() {
+        String message = "Hello World!";
+        byte[] encoded = Base64.encodeBase64(message.getBytes(StandardCharsets.ISO_8859_1));
+        String decoded = new String(Base64.decodeBase64(encoded), StandardCharsets.ISO_8859_1);
+        Assertions.assertEquals(message, decoded);
     }
 }

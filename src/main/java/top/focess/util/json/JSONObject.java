@@ -34,7 +34,7 @@ public abstract class JSONObject {
             return new JSONList((List) object);
         else if (object instanceof String)
             return parse((String) object);
-        throw new IllegalStateException("This element type is not supported.");
+        throw new JSONParseException("This element type is not supported.");
     }
 
     /**

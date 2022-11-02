@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * This class is used to define a JSON object as List.
  */
-public class JSONList extends JSONObject implements Iterable<JSONObject> {
+public class JSONList extends JSONObject implements Iterable<JSONObject>,IJSONList {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final TypeReference<List<Object>> TYPE_REFERENCE = new TypeReference<List<Object>>() {
@@ -80,7 +80,17 @@ public class JSONList extends JSONObject implements Iterable<JSONObject> {
 
     @NotNull
     @Override
-    public Iterator<JSONObject> iterator() {
+    public Iterator<JSONObject> iterator() throws JSONParseException {
         return values.stream().map(JSONObject::parse).iterator();
+    }
+
+    @NotNull
+    public JSONIntList toInts() {
+        return new JSONIntList(this);
+    }
+
+    @Override
+    public JSONList getJSONList() {
+        return this;
     }
 }

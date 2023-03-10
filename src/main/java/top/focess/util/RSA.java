@@ -25,7 +25,7 @@ public class RSA {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
-        RSA_KEY_PAIR_GENERATOR.initialize(1024);
+        RSA_KEY_PAIR_GENERATOR.initialize(2048);
     }
 
 

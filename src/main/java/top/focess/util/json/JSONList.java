@@ -89,6 +89,11 @@ public class JSONList extends JSONObject implements Iterable<JSONObject>,IJSONLi
         return new JSONIntList(this);
     }
 
+    @NotNull
+    public JSONDoubleList toDoubles() {
+        return new JSONDoubleList(this);
+    }
+
     @Override
     public JSONList getJSONList() {
         return this;

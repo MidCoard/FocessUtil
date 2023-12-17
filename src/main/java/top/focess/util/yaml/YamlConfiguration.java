@@ -433,7 +433,11 @@ public class YamlConfiguration implements SectionMap {
 
     @Override
     public boolean containsSection(final String key) {
-        return this.get(key) instanceof Map;
+        try {
+            return this.getAsMap(key) != null;
+        } catch (final Exception e) {
+            return false;
+        }
     }
 
     @Override

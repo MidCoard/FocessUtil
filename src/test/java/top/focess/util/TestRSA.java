@@ -2,6 +2,9 @@ package top.focess.util;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import top.focess.util.network.HttpResponse;
+import top.focess.util.network.HttpResponseException;
+import top.focess.util.network.NetworkHandler;
 
 import java.nio.charset.StandardCharsets;
 
@@ -35,4 +38,12 @@ public class TestRSA {
         String decoded = new String(Base64.decodeBase64(encoded), StandardCharsets.ISO_8859_1);
         Assertions.assertEquals(message, decoded);
     }
+
+    @Test
+    public void testNetworkHandler() throws HttpResponseException {
+        NetworkHandler networkHandler = new NetworkHandler();
+        HttpResponse response = networkHandler.request("https://www.baidu.com", NetworkHandler.RequestType.GET);
+        System.out.println(response.getAsString());
+    }
+
 }

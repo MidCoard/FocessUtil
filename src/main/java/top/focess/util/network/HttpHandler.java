@@ -4,8 +4,8 @@ import java.util.Map;
 
 public interface HttpHandler {
 
-    void handle(String url, Map<String,Object> data, Map<String,String> header, String body);
+    void handle(String url, String data, Map<String,String> header, String body);
 
-    void handleException(String url, Map<String,Object> data, Map<String,String> header,Exception e);
+    void handleException(String url, String data, Map<String,String> header,Exception e);
 
 }

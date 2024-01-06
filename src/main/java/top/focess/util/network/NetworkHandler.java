@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import okhttp3.*;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import top.focess.util.json.JSON;
 
@@ -14,6 +15,7 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -123,11 +125,30 @@ public class NetworkHandler {
      */
     public HttpResponse request(final String url, final Map<String, Object> data, final Map<String, String> header, final MediaType mediaType, final RequestType requestType) {
         if (requestType == RequestType.GET)
-            return this.get(url, data, header);
+            return this.get(url, Collections.emptyMap(), header);
+        else
+            return this.request(url, mediaType == JSON ? new JSON(data).toJson() : process(data), header, mediaType, requestType);
+    }
+
+    /**
+     * Send a http-request
+     *
+     * @param url         the request url
+     * @param data        the request data
+     * @param header      the request header
+     * @param mediaType   the request acceptable type
+     * @param requestType the request type
+     * @return the response of this request
+     */
+    public HttpResponse request(final String url, final String data, final Map<String, String> header, final MediaType mediaType, final RequestType requestType) {
+        if (requestType == RequestType.GET)
+            return this.get(url, Collections.emptyMap(), header);
         else if (requestType == RequestType.POST)
             return this.post(url, data, header, mediaType);
         else if (requestType == RequestType.PUT)
             return this.put(url, data, header, mediaType);
+        else if (requestType == RequestType.DELETE)
+            return this.delete(url, data, header, mediaType);
         return HttpResponse.ofNull();
     }
 
@@ -149,23 +170,10 @@ public class NetworkHandler {
      * @param mediaType the request acceptable type
      * @return the response of this request
      */
-    public HttpResponse put(final String url, final Map<String, Object> data, final Map<String, String> header, @NotNull final MediaType mediaType) {
-        final String value;
-        if (mediaType.equals(JSON))
-            value = new JSON(data).toJson();
-        else value = this.process(data);
-        final RequestBody requestBody = RequestBody.create(value, mediaType);
+    public HttpResponse put(final String url, final String data, final Map<String, String> header, @NotNull final MediaType mediaType) {
+        final RequestBody requestBody = RequestBody.create(data, mediaType);
         final Request request = new Request.Builder().url(url).headers(Headers.of(header)).put(requestBody).build();
-        try {
-            final Response response = client.newCall(request).execute();
-            // Call#execute() returns a non-null Response object
-            final String body = Objects.requireNonNull(response.body()).string();
-            this.handlers.forEach(handler -> handler.handle(url,data,header,body));
-            return new HttpResponse( response.code(), response.headers(), body);
-        } catch (final Exception e) {
-            this.handlers.forEach(handler -> handler.handleException(url,data,header,e));
-            return new HttpResponse( e);
-        }
+        return this.sendHttpRequest(url, data, header, request);
     }
 
     /**
@@ -177,20 +185,37 @@ public class NetworkHandler {
      * @param mediaType the request acceptable type
      * @return the response of this request
      */
-    public HttpResponse post(final String url, final Map<String, Object> data, final Map<String, String> header, @NotNull final MediaType mediaType) {
-        final String value;
-        if (mediaType.equals(JSON))
-            value = new JSON(data).toJson();
-        else value = this.process(data);
-        final RequestBody requestBody = RequestBody.create(value, mediaType);
+    public HttpResponse post(final String url, final String data, final Map<String, String> header, @NotNull final MediaType mediaType) {
+        final RequestBody requestBody = RequestBody.create(data, mediaType);
         final Request request = new Request.Builder().url(url).headers(Headers.of(header)).post(requestBody).build();
+        return this.sendHttpRequest(url, data, header, request);
+    }
+
+    /**
+     * Send a DELETE http-request
+     *
+     * @param url       the request url
+     * @param data      the request data
+     * @param header    the request header
+     * @param mediaType the request acceptable type
+     * @return the response of this request
+     */
+    public HttpResponse delete(final String url, final String data, final Map<String, String> header, @NotNull final MediaType mediaType) {
+        final RequestBody requestBody = RequestBody.create(data, mediaType);
+        final Request request = new Request.Builder().url(url).headers(Headers.of(header)).delete(requestBody).build();
+        return this.sendHttpRequest(url, data, header, request);
+    }
+
+    @NotNull
+    @Contract("_, _, _, _ -> new")
+    private HttpResponse sendHttpRequest(final String url, final String data, final Map<String, String> header, final Request request) {
         try {
             final Response response = client.newCall(request).execute();
             // Call#execute() returns a non-null Response object
             final String body = Objects.requireNonNull(response.body()).string();
             this.handlers.forEach(handler -> handler.handle(url,data,header,body));
             return new HttpResponse( response.code(), response.headers(), body);
-        } catch (final IOException e) {
+        } catch (final Exception e) {
             this.handlers.forEach(handler -> handler.handleException(url,data,header,e));
             return new HttpResponse( e);
         }
@@ -206,20 +231,11 @@ public class NetworkHandler {
      */
     public HttpResponse get(final String url, @NotNull final Map<String, Object> data, final Map<String, String> header) {
         final Request request;
-        if (data.size() != 0)
+        if (!data.isEmpty())
             request = new Request.Builder().url(url + "?" + this.process(data)).get().headers(Headers.of(header)).build();
         else
             request = new Request.Builder().url(url).get().headers(Headers.of(header)).build();
-        try {
-            final Response response = client.newCall(request).execute();
-            // Call#execute() returns a non-null Response object
-            final String body = Objects.requireNonNull(response.body()).string();
-            this.handlers.forEach(handler -> handler.handle(url,data,header,body));
-            return new HttpResponse( response.code(), response.headers(), body);
-        } catch (final IOException e) {
-            this.handlers.forEach(handler -> handler.handleException(url,data,header,e));
-            return new HttpResponse(e);
-        }
+        return this.sendHttpRequest(url + "?" + this.process(data), "", header, request);
     }
 
     /**
@@ -246,7 +262,11 @@ public class NetworkHandler {
         /**
          * HTTP PUT Request Method
          */
-        PUT
+        PUT,
+        /**
+         * HTTP DELETE Request Method
+         */
+        DELETE
     }
 
     /**

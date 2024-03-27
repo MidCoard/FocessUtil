@@ -10,7 +10,6 @@ import top.focess.util.json.JSON;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509TrustManager;
-import java.io.IOException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
@@ -35,7 +34,9 @@ public class NetworkHandler {
      * Used to indicate this http-request accepts normal String
      */
     @NonNull
-    public static final MediaType TEXT = Objects.requireNonNull(MediaType.parse("application/x-www-form-urlencoded; charset=utf-8"));
+    public static final MediaType TEXT = Objects.requireNonNull(MediaType.parse("text/plain; charset=utf-8"));
+    @NonNull
+    public static final MediaType URL_ENCODED = Objects.requireNonNull(MediaType.parse("application/x-www-form-urlencoded; charset=utf-8"));
     private static final X509TrustManager[] X_509_TRUST_MANAGERS = {
             new X509TrustManager() {
                 @Override
@@ -127,7 +128,7 @@ public class NetworkHandler {
         if (requestType == RequestType.GET)
             return this.get(url, Collections.emptyMap(), header);
         else
-            return this.request(url, mediaType == JSON ? new JSON(data).toJson() : process(data), header, mediaType, requestType);
+            return this.request(url, mediaType == NetworkHandler.JSON ? new JSON(data).toJson() : this.process(data), header, mediaType, requestType);
     }
 
     /**

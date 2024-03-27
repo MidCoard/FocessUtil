@@ -73,6 +73,10 @@ public class JSONList extends JSONObject implements Iterable<JSONObject>,IJSONLi
         return this.values.size();
     }
 
+    public boolean isEmpty() {
+        return this.values.isEmpty();
+    }
+
     @Override
     public String toString() {
         return this.values.toString();

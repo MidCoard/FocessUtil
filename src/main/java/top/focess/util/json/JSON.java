@@ -96,4 +96,9 @@ public class JSON extends JSONObject implements SectionMap {
     public JSON getJSON(String key) {
         return this.getSection(key);
     }
+
+    @Override
+    public boolean contains(final String key) {
+        return SectionMap.super.contains(key);
+    }
 }

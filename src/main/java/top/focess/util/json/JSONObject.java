@@ -121,4 +121,8 @@ public abstract class JSONObject {
         throw new UnsupportedOperationException();
     }
 
+    public boolean contains(final String key) {
+        throw new UnsupportedOperationException();
+    }
+
 }

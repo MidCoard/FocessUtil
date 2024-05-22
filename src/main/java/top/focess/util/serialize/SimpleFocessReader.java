@@ -4,6 +4,8 @@ import com.google.common.collect.Maps;
 import com.thoughtworks.xstream.converters.reflection.PureJavaReflectionProvider;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.io.ByteArrayInputStream;
+import java.io.ObjectInputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -22,53 +24,6 @@ public class SimpleFocessReader extends FocessReader {
     private static final Map<Class<?>, Reader<?>> CLASS_READER_MAP = Maps.newHashMap();
 
     static {
-        CLASS_READER_MAP.put(ArrayList.class, (Reader<ArrayList>) (t, reader) -> {
-            final ArrayList list = new ArrayList();
-            final int length = reader.readInt();
-            for (int i = 0; i < length; i++)
-                list.add(reader.readObject());
-            return list;
-        });
-
-        CLASS_READER_MAP.put(LinkedList.class, (Reader<LinkedList>) (t, reader) -> {
-            final LinkedList list = new LinkedList();
-            final int length = reader.readInt();
-            for (int i = 0; i < length; i++)
-                list.offer(reader.readObject());
-            return list;
-        });
-
-        CLASS_READER_MAP.put(HashMap.class, (Reader<HashMap>) (t, reader) -> {
-            final HashMap hashMap = new HashMap();
-            final int length = reader.readInt();
-            for (int i = 0; i < length; i++)
-                hashMap.put(reader.readObject(), reader.readObject());
-            return hashMap;
-        });
-
-        CLASS_READER_MAP.put(TreeMap.class, (Reader<TreeMap>) (t, reader) -> {
-            final TreeMap treeMap = new TreeMap();
-            final int length = reader.readInt();
-            for (int i = 0; i < length; i++)
-                treeMap.put(reader.readObject(), reader.readObject());
-            return treeMap;
-        });
-
-        CLASS_READER_MAP.put(HashSet.class, (Reader<HashSet>) (t, reader) -> {
-            final HashSet hashSet = new HashSet();
-            final int length = reader.readInt();
-            for (int i = 0; i < length; i++)
-                hashSet.add(reader.readObject());
-            return hashSet;
-        });
-
-        CLASS_READER_MAP.put(TreeSet.class, (Reader<TreeSet>) (t, reader) -> {
-            final TreeSet treeSet = new TreeSet();
-            final int length = reader.readInt();
-            for (int i = 0; i < length; i++)
-                treeSet.add(reader.readObject());
-            return treeSet;
-        });
 
         CLASS_READER_MAP.put(Class.class, (Reader<Class>) (t, reader) -> {
             try {
@@ -98,14 +53,6 @@ public class SimpleFocessReader extends FocessReader {
             } catch (final ClassNotFoundException e) {
                 throw new SerializationParseException(e);
             }
-        });
-
-        CLASS_READER_MAP.put(ConcurrentHashMap.KeySetView.class, (Reader<ConcurrentHashMap.KeySetView>) (t, reader) -> {
-            final ConcurrentHashMap.KeySetView keySetView = ConcurrentHashMap.newKeySet();
-            final int length = reader.readInt();
-            for (int i = 0; i < length; i++)
-                keySetView.add(reader.readObject());
-            return keySetView;
         });
     }
 
@@ -261,7 +208,7 @@ public class SimpleFocessReader extends FocessReader {
                     Array.set(array, i, this.readObject());
                 return array;
             }
-            case C_SERIALIZABLE: {
+            case C_FSERIALIZABLE: {
                 final String className = this.readString();
                 final Object o = this.readObject();
                 if (o instanceof Map)
@@ -302,6 +249,16 @@ public class SimpleFocessReader extends FocessReader {
                     if ((reader = (Reader<T>) CLASS_READER_MAP.get(cls)) != null)
                         return reader.read(cls, this);
                 } catch (final ClassNotFoundException e) {
+                    throw new SerializationParseException(e);
+                }
+            }
+            case C_SERIALIZABLE: {
+                try {
+                    final byte[] bytes = (byte[]) this.readObject();
+                    final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+                    final ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+                    return objectInputStream.readObject();
+                } catch (final Exception e) {
                     throw new SerializationParseException(e);
                 }
             }

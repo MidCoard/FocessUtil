@@ -13,10 +13,11 @@ class Opcodes {
     public static final byte C_OBJECT = 9;
     public static final byte C_ARRAY = 10;
     public static final byte C_NULL = 11;
-    public static final byte C_SERIALIZABLE = 12;
+    public static final byte C_FSERIALIZABLE = 12;
     public static final byte C_FIELD = 13;
     public static final byte C_RESERVED = 14;
     public static final byte C_ENUM = 15;
+    public static final byte C_SERIALIZABLE = 16;
     public static final byte C_START = 20;
     public static final byte C_END = 21;
 }

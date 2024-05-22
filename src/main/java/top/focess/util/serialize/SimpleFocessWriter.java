@@ -3,13 +3,17 @@ package top.focess.util.serialize;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Bytes;
+import top.focess.util.Pair;
 
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,46 +24,7 @@ public class SimpleFocessWriter extends FocessWriter {
     private static final Map<Class<?>, Writer<?>> CLASS_WRITER_MAP = Maps.newHashMap();
 
     static {
-        CLASS_WRITER_MAP.put(ArrayList.class, (Writer<ArrayList>) (list, writer) -> {
-            writer.writeInt(list.size());
-            for (final Object o : list)
-                writer.writeObject(o);
-        });
-        CLASS_WRITER_MAP.put(LinkedList.class, (Writer<LinkedList>) (linkedList, writer) -> {
-            writer.writeInt(linkedList.size());
-            for (final Object o : linkedList)
-                writer.writeObject(o);
-        });
-        CLASS_WRITER_MAP.put(HashMap.class, (Writer<HashMap>) (hashMap, writer) -> {
-            writer.writeInt(hashMap.size());
-            for (final Object o : hashMap.keySet()) {
-                writer.writeObject(o);
-                writer.writeObject(hashMap.get(o));
-            }
-        });
-        CLASS_WRITER_MAP.put(TreeSet.class, (Writer<TreeSet>) (set, writer) -> {
-            writer.writeInt(set.size());
-            for (final Object o : set)
-                writer.writeObject(o);
-        });
-        CLASS_WRITER_MAP.put(HashSet.class, (Writer<HashSet>) (set, writer) -> {
-            writer.writeInt(set.size());
-            for (final Object o : set)
-                writer.writeObject(o);
-        });
-        CLASS_WRITER_MAP.put(TreeMap.class, (Writer<TreeMap>) (map, writer) -> {
-            writer.writeInt(map.size());
-            for (final Object o : map.keySet()) {
-                writer.writeObject(o);
-                writer.writeObject(map.get(o));
-            }
-        });
         CLASS_WRITER_MAP.put(Class.class, (Writer<Class>) (clazz, writer) -> writer.writeString(clazz.getName()));
-        CLASS_WRITER_MAP.put(ConcurrentHashMap.KeySetView.class, (Writer<ConcurrentHashMap.KeySetView>) (set, writer) -> {
-            writer.writeInt(set.size());
-            for (final Object o : set)
-                writer.writeObject(o);
-        });
     }
 
     private final List<Byte> data = Lists.newArrayList();
@@ -138,13 +103,15 @@ public class SimpleFocessWriter extends FocessWriter {
             this.writeString(cls.getSuperclass().getName());
         } else if (FocessSerializable.class.isAssignableFrom(cls)) {
             if (isSerializable)
-                this.writeByte(C_SERIALIZABLE);
+                this.writeByte(C_FSERIALIZABLE);
             else this.writeByte(C_OBJECT);
             this.writeString(cls.getName());
-        } else if (CLASS_WRITER_MAP.containsKey(cls)) {
+        } else if (SimpleFocessWriter.CLASS_WRITER_MAP.containsKey(cls)) {
             this.writeByte(C_RESERVED);
             this.writeString(cls.getName());
-        } else throw new NotFocessSerializableException(cls.getName());
+        } else if (Serializable.class.isAssignableFrom(cls))
+            this.writeByte(C_SERIALIZABLE);
+        else throw new NotFocessSerializableException(cls.getName());
     }
 
     private <T> void writeObject(final Object o) {
@@ -200,8 +167,17 @@ public class SimpleFocessWriter extends FocessWriter {
             final T t = (T) o;
             final Writer<T> writer = (Writer<T>) CLASS_WRITER_MAP.get(o.getClass());
             writer.write(t, this);
-        } else
-            throw new NotFocessSerializableException(o.getClass().getName());
+        } else if (o instanceof Serializable) {
+            try {
+                final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                final ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+                objectOutputStream.writeObject(o);
+                objectOutputStream.close();
+                this.writeObject(byteArrayOutputStream.toByteArray());
+            } catch (final Exception e) {
+                throw new SerializationException(e);
+            }
+        } throw new NotFocessSerializableException(o.getClass().getName());
     }
 
     private void writeField(final String name, final Object o) {

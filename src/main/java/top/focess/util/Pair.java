@@ -1,9 +1,12 @@
 package top.focess.util;
 
+import com.google.common.collect.Maps;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import top.focess.util.serialize.FocessSerializable;
 
-import java.io.Serializable;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -12,7 +15,7 @@ import java.util.Objects;
  * @param <K> the type of first element of the Pair
  * @param <V> the type of second element of the Pair
  */
-public class Pair<K, V> implements Serializable {
+public class Pair<K, V> implements FocessSerializable {
 
     /**
      * The first element
@@ -87,5 +90,18 @@ public class Pair<K, V> implements Serializable {
         int result = key != null ? key.hashCode() : 0;
         result = 31 * result + (value != null ? value.hashCode() : 0);
         return result;
+    }
+
+    @Nullable
+    @Override
+    public Map<String, Object> serialize() {
+        Map<String, Object> map = Maps.newHashMap();
+        map.put("key", this.key);
+        map.put("value", this.value);
+        return map;
+    }
+
+    public static Pair<?,?> deserialize(Map<String ,Object> map) {
+        return Pair.of(map.get("key"), map.get("value"));
     }
 }

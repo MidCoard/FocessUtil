@@ -177,7 +177,7 @@ public class SimpleFocessWriter extends FocessWriter {
             } catch (final Exception e) {
                 throw new SerializationException(e);
             }
-        } throw new NotFocessSerializableException(o.getClass().getName());
+        } else throw new NotFocessSerializableException(o.getClass().getName());
     }
 
     private void writeField(final String name, final Object o) {

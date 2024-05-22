@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class is used to deserialize FocessSerializable-Object.
@@ -36,6 +37,33 @@ public abstract class FocessReader {
         }
         return new SimpleFocessReader(Bytes.toArray(byteList));
     }
+
+    /**
+     * New a FocessReader with given input stream and reader map
+     * @param inputStream the given input stream
+     * @param readerMap the given reader map
+     * @return the FocessReader with given input stream and reader map
+     *
+     * @throws IllegalStateException if the input stream is not valid
+     */
+    @NotNull
+    @Contract("_,_ -> new")
+    public static FocessReader newFocessReader(final InputStream inputStream, final Map<Class<?>, SimpleFocessReader.Reader<?>> readerMap) {
+        final List<Byte> byteList = Lists.newArrayList();
+        final byte[] bytes = new byte[1024];
+        int len;
+        try {
+            while ((len = inputStream.read(bytes)) != -1)
+                for (int i = 0; i < len; i++)
+                    byteList.add(bytes[i]);
+            inputStream.close();
+        } catch (final Exception e) {
+            throw new IllegalStateException(e);
+        }
+        return new SimpleFocessReader(Bytes.toArray(byteList), readerMap);
+    }
+
+
 
     /**
      * Read object from the reader

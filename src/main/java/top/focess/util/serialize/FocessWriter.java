@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Map;
 
 /**
  * This class is used to serialize FocessSerializable-Object.
@@ -23,6 +24,31 @@ public abstract class FocessWriter {
     public static FocessWriter newFocessWriter(final OutputStream outputStream) {
         return new SimpleFocessWriter() {
 
+            @Override
+            public void write(final Object o) {
+                super.write(o);
+                try {
+                    outputStream.write(this.toByteArray());
+                    outputStream.flush();
+                    outputStream.close();
+                } catch (final IOException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+        };
+    }
+    /**
+     * New a FocessWriter with given output stream and writer map
+     * @param outputStream the given output stream
+     * @param writerMap the given writer map
+     * @return the FocessWriter with given output stream and writer map
+     *
+     * @throws IllegalStateException if the given output stream is not valid
+     */
+    @NotNull
+    @Contract("_,_ -> new")
+    public static FocessWriter newFocessWriter(final OutputStream outputStream, final Map<Class<?>, SimpleFocessWriter.Writer<?>> writerMap) {
+        return new SimpleFocessWriter(writerMap) {
             @Override
             public void write(final Object o) {
                 super.write(o);

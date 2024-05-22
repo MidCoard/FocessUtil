@@ -24,54 +24,64 @@ public class SimpleFocessWriter extends FocessWriter {
     private static final Map<Class<?>, Writer<?>> CLASS_WRITER_MAP = Maps.newHashMap();
 
     static {
-        CLASS_WRITER_MAP.put(Class.class, (Writer<Class>) (clazz, writer) -> writer.writeString(clazz.getName()));
+        SimpleFocessWriter.CLASS_WRITER_MAP.put(Class.class, (Writer<Class>) (clazz, writer) -> writer.writeString(clazz.getName()));
     }
+
+    private final Map<Class<?>, Writer<?>> writerMap = Maps.newHashMap();
 
     private final List<Byte> data = Lists.newArrayList();
 
     protected SimpleFocessWriter() {}
 
-    private void writeInt(int v) {
+    public SimpleFocessWriter(final Map<Class<?>, Writer<?>> writerMap) {
+        this.writerMap.putAll(writerMap);
+    }
+
+    public void writeInt(int v) {
         for (int i = 0; i < 4; i++) {
             this.data.add((byte) (v & 0xFF));
             v >>>= 8;
         }
     }
 
-    private void writeLong(long v) {
+    public void writeLong(long v) {
         for (int i = 0; i < 8; i++) {
             this.data.add((byte) (v & 0xFFL));
             v >>>= 8;
         }
     }
 
-    private void writeString(final String v) {
+    public void writeString(final String v) {
         final byte[] bytes = v.getBytes(StandardCharsets.UTF_8);
         this.writeInt(bytes.length);
         this.data.addAll(Bytes.asList(bytes));
     }
 
-    private void writeFloat(final float v) {
+    public void writeFloat(final float v) {
         this.writeInt(Float.floatToIntBits(v));
     }
 
-    private void writeDouble(final double v) {
+    public void writeDouble(final double v) {
         this.writeLong(Double.doubleToLongBits(v));
     }
 
-    private void writeShort(short v) {
+    public void writeShort(short v) {
         for (int i = 0; i < 2; i++) {
             this.data.add((byte) (v & 0xFF));
             v >>>= 8;
         }
     }
 
-    private void writeBoolean(final boolean v) {
+    public void writeBoolean(final boolean v) {
         this.data.add((byte) (v ? 1 : 0));
     }
 
-    private void writeChar(final char v) {
+    public void writeChar(final char v) {
         this.writeShort((short) v);
+    }
+
+    public void writeByte(final byte v) {
+        this.data.add(v);
     }
 
     private void writeClass(final Class<?> cls, final boolean isSerializable) {
@@ -106,7 +116,7 @@ public class SimpleFocessWriter extends FocessWriter {
                 this.writeByte(C_FSERIALIZABLE);
             else this.writeByte(C_OBJECT);
             this.writeString(cls.getName());
-        } else if (SimpleFocessWriter.CLASS_WRITER_MAP.containsKey(cls)) {
+        } else if (SimpleFocessWriter.CLASS_WRITER_MAP.containsKey(cls) || this.writerMap.containsKey(cls)) {
             this.writeByte(C_RESERVED);
             this.writeString(cls.getName());
         } else if (Serializable.class.isAssignableFrom(cls))
@@ -114,7 +124,7 @@ public class SimpleFocessWriter extends FocessWriter {
         else throw new NotFocessSerializableException(cls.getName());
     }
 
-    private <T> void writeObject(final Object o) {
+    public <T> void writeObject(final Object o) {
         if (o == null) {
             this.writeByte(C_NULL);
             return;
@@ -163,10 +173,12 @@ public class SimpleFocessWriter extends FocessWriter {
             this.writeInt(length = Array.getLength(o));
             for (int i = 0; i < length; i++)
                 this.writeObject(Array.get(o, i));
-        } else if (CLASS_WRITER_MAP.containsKey(o.getClass())) {
-            final T t = (T) o;
+        } else if (SimpleFocessWriter.CLASS_WRITER_MAP.containsKey(o.getClass())) {
             final Writer<T> writer = (Writer<T>) CLASS_WRITER_MAP.get(o.getClass());
-            writer.write(t, this);
+            writer.write((T) o, this);
+        } else if (this.writerMap.containsKey(o.getClass())) {
+            final Writer<T> writer = (Writer<T>) this.writerMap.get(o.getClass());
+            writer.write((T) o, this);
         } else if (o instanceof Serializable) {
             try {
                 final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -200,7 +212,7 @@ public class SimpleFocessWriter extends FocessWriter {
         return Bytes.toArray(this.data);
     }
 
-    private interface Writer<T> {
-        void write(T t, SimpleFocessWriter writer) throws NotFocessSerializableException;
+    public interface Writer<T> {
+        void write(T t, FocessWriter writer) throws NotFocessSerializableException;
     }
 }

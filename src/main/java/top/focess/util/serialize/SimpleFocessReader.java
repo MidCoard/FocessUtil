@@ -57,7 +57,15 @@ public class SimpleFocessReader extends FocessReader {
 
     private final byte[] bytes;
 
+    private final Map<Class<?>, Reader<?>> readerMap = Maps.newHashMap();
+
     private int pointer;
+
+    public SimpleFocessReader(final byte[] bytes, final Map<Class<?>, Reader<?>> readerMap) {
+        this.bytes = bytes;
+        this.pointer = 0;
+        this.readerMap.putAll(readerMap);
+    }
 
     protected SimpleFocessReader(final byte[] bytes) {
         this.bytes = bytes;
@@ -72,21 +80,21 @@ public class SimpleFocessReader extends FocessReader {
         DEFAULT_CLASS_FINDER = defaultClassFinder;
     }
 
-    private int readInt() {
+    public int readInt() {
         int r = 0;
         for (int i = 0; i < 4; i++)
             r += (Byte.toUnsignedInt(this.bytes[this.pointer++]) << (i * 8));
         return r;
     }
 
-    private long readLong() {
+    public long readLong() {
         long r = 0L;
         for (int i = 0; i < 8; i++)
             r += (Byte.toUnsignedLong(this.bytes[this.pointer++]) << (i * 8L));
         return r;
     }
 
-    private String readString() {
+    public String readString() {
         final int length = this.readInt();
         final byte[] bytes = new byte[length];
         for (int i = 0; i < length; i++)
@@ -94,19 +102,19 @@ public class SimpleFocessReader extends FocessReader {
         return new String(bytes, StandardCharsets.UTF_8);
     }
 
-    private float readFloat() {
+    public float readFloat() {
         return Float.intBitsToFloat(this.readInt());
     }
 
-    private double readDouble() {
+    public double readDouble() {
         return Double.longBitsToDouble(this.readLong());
     }
 
-    private byte readByte() {
+    public byte readByte() {
         return this.bytes[this.pointer++];
     }
 
-    private short readShort() {
+    public short readShort() {
         short r = 0;
         for (int i = 0; i < 2; i++)
             // still the right side is short even if not cast to short
@@ -115,11 +123,11 @@ public class SimpleFocessReader extends FocessReader {
         return r;
     }
 
-    private char readChar() {
+    public char readChar() {
         return (char) this.readShort();
     }
 
-    private boolean readBoolean() {
+    public boolean readBoolean() {
         return this.readByte() == 1;
     }
 
@@ -168,7 +176,7 @@ public class SimpleFocessReader extends FocessReader {
     }
 
     @Nullable
-    private <T,V extends Enum<V>> Object readObject() {
+    public <T,V extends Enum<V>> Object readObject() {
         final byte type = this.readByte();
         switch (type) {
             case C_NULL:
@@ -244,9 +252,12 @@ public class SimpleFocessReader extends FocessReader {
                 final String className = this.readString();
                 try {
                     final Class<T> cls = (Class<T>) DEFAULT_CLASS_FINDER.forName(className);
-                    final Reader<T> reader;
+                    Reader<T> reader;
                     if ((reader = (Reader<T>) CLASS_READER_MAP.get(cls)) != null)
                         return reader.read(cls, this);
+                    else if ((reader = (Reader<T>) this.readerMap.get(cls)) != null)
+                        return reader.read(cls, this);
+                    else throw new SerializationParseException("No reader for class: " + className);
                 } catch (final ClassNotFoundException e) {
                     throw new SerializationParseException(e);
                 }
@@ -266,8 +277,8 @@ public class SimpleFocessReader extends FocessReader {
         }
     }
 
-    private interface Reader<T> {
-        T read(Class<T> cls, SimpleFocessReader reader) throws SerializationParseException;
+    public interface Reader<T> {
+        T read(Class<T> cls, FocessReader reader) throws SerializationParseException;
     }
 
 }

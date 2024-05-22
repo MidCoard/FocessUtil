@@ -44,4 +44,26 @@ public abstract class FocessReader {
      * @throws SerializationParseException if the binary-data is not correct
      */
     public abstract Object read();
+
+    public abstract String readString();
+
+    public abstract int readInt();
+
+    public abstract long readLong();
+
+    public abstract float readFloat();
+
+    public abstract double readDouble();
+
+    public abstract boolean readBoolean();
+
+    public abstract byte readByte();
+
+    public abstract short readShort();
+
+    public abstract char readChar();
+
+    public abstract <T,V extends Enum<V>> Object readObject();
+
+
 }

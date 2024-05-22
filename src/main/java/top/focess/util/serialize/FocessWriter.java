@@ -44,4 +44,24 @@ public abstract class FocessWriter {
      * @throws NotFocessSerializableException if the object is not FocessSerializable
      */
     public abstract void write(Object o);
+
+    public abstract void writeString(String v);
+
+    public abstract void writeInt(int v);
+
+    public abstract void writeLong(long v);
+
+    public abstract void writeFloat(float v);
+
+    public abstract void writeDouble(double v);
+
+    public abstract void writeBoolean(boolean v);
+
+    public abstract void writeByte(byte v);
+
+    public abstract void writeShort(short v);
+
+    public abstract void writeChar(char v);
+
+    public abstract <T> void writeObject(Object o);
 }

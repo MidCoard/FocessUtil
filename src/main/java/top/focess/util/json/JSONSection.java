@@ -4,7 +4,9 @@ import java.util.Map;
 
 /**
  * Section of JSON.
+ * @deprecated FocessUtil is no longer maintained. Do not use.
  */
+@Deprecated(forRemoval = true, since = "1.1.25")
 public class JSONSection extends JSON {
     private final JSON parent;
 

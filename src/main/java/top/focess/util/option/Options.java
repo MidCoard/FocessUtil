@@ -10,7 +10,9 @@ import java.util.Map;
 
 /**
  * Used to parse the arguments into options
+ * @deprecated FocessUtil is no longer maintained. Do not use.
  */
+@Deprecated(forRemoval = true, since = "1.1.25")
 public class Options {
 
     private final Map<String, Option> options = Maps.newHashMap();

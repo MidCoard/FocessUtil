@@ -9,7 +9,9 @@ import java.util.Queue;
 
 /**
  * An option is a way to present arguments. It is convenient to use option to get arguments that we want.
+ * @deprecated FocessUtil is no longer maintained. Do not use.
  */
+@Deprecated(forRemoval = true, since = "1.1.25")
 public class Option {
 
     private final OptionParserClassifier classifier;

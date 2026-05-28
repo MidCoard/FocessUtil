@@ -1,5 +1,9 @@
 package top.focess.util.serialize;
 
+/**
+ * @deprecated FocessUtil is no longer maintained. Do not use.
+ */
+@Deprecated(forRemoval = true, since = "1.1.25")
 class Opcodes {
     public static final byte C_BYTE = 0;
     public static final byte C_SHORT = 1;

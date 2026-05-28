@@ -14,6 +14,10 @@ import java.util.*;
 
 import static top.focess.util.serialize.Opcodes.*;
 
+/**
+ * @deprecated FocessUtil is no longer maintained. Do not use.
+ */
+@Deprecated(forRemoval = true, since = "1.1.25")
 public class SimpleFocessReader extends FocessReader {
 
     private static ClassFinder DEFAULT_CLASS_FINDER = Class::forName;

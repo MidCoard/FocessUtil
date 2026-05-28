@@ -2,7 +2,9 @@ package top.focess.util;
 
 /**
  * This class is used to store a RSA Keypair.
+ * @deprecated FocessUtil is no longer maintained. Do not use.
  */
+@Deprecated(forRemoval = true, since = "1.1.25")
 public class RSAKeypair extends Pair<String,String>{
 
     /**

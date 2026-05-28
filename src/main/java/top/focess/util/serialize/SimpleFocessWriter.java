@@ -19,6 +19,10 @@ import java.util.stream.Stream;
 
 import static top.focess.util.serialize.Opcodes.*;
 
+/**
+ * @deprecated FocessUtil is no longer maintained. Do not use.
+ */
+@Deprecated(forRemoval = true, since = "1.1.25")
 public class SimpleFocessWriter extends FocessWriter {
 
     private static final Map<Class<?>, Writer<?>> CLASS_WRITER_MAP = Maps.newHashMap();

@@ -26,7 +26,9 @@ import java.util.stream.Collectors;
 
 /**
  * This class is used to define a YAML configuration.
+ * @deprecated FocessUtil is no longer maintained. Do not use.
  */
+@Deprecated(forRemoval = true, since = "1.1.25")
 public class YamlConfiguration implements SectionMap {
 
     private static final Yaml YAML = new Yaml();

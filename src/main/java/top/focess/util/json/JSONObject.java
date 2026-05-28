@@ -8,7 +8,9 @@ import java.util.Map;
 
 /**
  * Represents a JSON object. It represents JSON or JSONList.
+ * @deprecated FocessUtil is no longer maintained. Do not use.
  */
+@Deprecated(forRemoval = true, since = "1.1.25")
 public abstract class JSONObject {
 
     /**

@@ -9,7 +9,9 @@ import java.util.Map;
  * Represents this class is a serializable class
  * <p>
  * You should implement the deserialize method if you have implemented the serialize method (not return null).
+ * @deprecated FocessUtil is no longer maintained. Do not use.
  */
+@Deprecated(forRemoval = true, since = "1.1.25")
 public interface FocessSerializable extends Serializable {
 
     /**

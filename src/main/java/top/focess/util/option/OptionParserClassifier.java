@@ -6,7 +6,9 @@ import top.focess.util.option.type.OptionType;
 
 /**
  * This class defines how to parse the arguments into Option
+ * @deprecated FocessUtil is no longer maintained. Do not use.
  */
+@Deprecated(forRemoval = true, since = "1.1.25")
 public class OptionParserClassifier {
 
     /**

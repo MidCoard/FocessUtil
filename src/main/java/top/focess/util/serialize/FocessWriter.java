@@ -9,7 +9,9 @@ import java.util.Map;
 
 /**
  * This class is used to serialize FocessSerializable-Object.
+ * @deprecated FocessUtil is no longer maintained. Do not use.
  */
+@Deprecated(forRemoval = true, since = "1.1.25")
 public abstract class FocessWriter {
 
     /**

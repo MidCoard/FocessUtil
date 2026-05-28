@@ -14,7 +14,9 @@ import java.util.Objects;
  *
  * @param <K> the type of first element of the Pair
  * @param <V> the type of second element of the Pair
+ * @deprecated FocessUtil is no longer maintained. Do not use.
  */
+@Deprecated(forRemoval = true, since = "1.1.25")
 public class Pair<K, V> implements FocessSerializable {
 
     /**

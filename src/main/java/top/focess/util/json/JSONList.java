@@ -12,7 +12,9 @@ import java.util.Map;
 
 /**
  * This class is used to define a JSON object as List.
+ * @deprecated FocessUtil is no longer maintained. Do not use.
  */
+@Deprecated(forRemoval = true, since = "1.1.25")
 public class JSONList extends JSONObject implements Iterable<JSONObject>,IJSONList {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();

@@ -11,7 +11,9 @@ import java.util.Objects;
 
 /**
  * Represents a version of a plugin.
+ * @deprecated FocessUtil is no longer maintained. Do not use.
  */
+@Deprecated(forRemoval = true, since = "1.1.25")
 public class Version implements FocessSerializable,Comparable<Version> {
     /**
      * Represents an alpha version of a plugin.

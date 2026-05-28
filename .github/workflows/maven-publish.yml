@@ -8,20 +8,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Apache Maven Central
+      - name: Set up JDK and Maven Central credentials
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '11'
-          server-id: ossrh
+          server-id: central
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
-      - name: Publish to Apache Maven Central
+      - name: Publish to Maven Central
         run: mvn --batch-mode deploy
         env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}

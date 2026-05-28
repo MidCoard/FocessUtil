@@ -8,7 +8,9 @@ import org.jetbrains.annotations.NotNull;
  * This class is used to define the type of argument
  *
  * @param <T> the target type
+ * @deprecated FocessUtil is no longer maintained. Do not use.
  */
+@Deprecated(forRemoval = true, since = "1.1.25")
 public abstract class OptionType<T> {
 
     /**

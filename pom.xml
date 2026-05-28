@@ -5,10 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
     <name>FocessUtil</name>
     <url>https://github.com/MidCoard/FocessUtil</url>
-    <description>Focess Util Library</description>
+    <description>DEPRECATED — do not use. FocessUtil is no longer maintained; the RSA helper uses 1024-bit keys and MD5withRSA signatures which are considered insecure. See README for migration suggestions.</description>
     <groupId>top.focess</groupId>
     <artifactId>focess-util</artifactId>
-    <version>1.1.24</version>
+    <version>1.1.25</version>
 
     <distributionManagement>
         <snapshotRepository>
@@ -149,9 +149,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.13.0</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
+                    <showDeprecation>true</showDeprecation>
+                    <showWarnings>true</showWarnings>
                 </configuration>
             </plugin>
             <plugin>

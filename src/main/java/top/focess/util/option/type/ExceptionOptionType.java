@@ -6,7 +6,9 @@ package top.focess.util.option.type;
  * Implement the accept method. The accept method returns true if there is no exception in parsing the String argument, false otherwise.
  *
  * @param <T> the target type
+ * @deprecated FocessUtil is no longer maintained. Do not use.
  */
+@Deprecated(forRemoval = true, since = "1.1.25")
 public abstract class ExceptionOptionType<T> extends OptionType<T> {
 
     @Override

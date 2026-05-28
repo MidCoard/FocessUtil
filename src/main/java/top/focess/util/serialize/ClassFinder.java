@@ -2,7 +2,9 @@ package top.focess.util.serialize;
 
 /**
  * Used to find class by its name.
+ * @deprecated FocessUtil is no longer maintained. Do not use.
  */
+@Deprecated(forRemoval = true, since = "1.1.25")
 public interface ClassFinder {
 
     default Class<?> forName0(final String className) throws ClassNotFoundException {

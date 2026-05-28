@@ -4,6 +4,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 
+/**
+ * @deprecated FocessUtil is no longer maintained. Do not use.
+ */
+@Deprecated(forRemoval = true, since = "1.1.25")
 public class JSONIntList extends AJSONList<Integer> {
 
 

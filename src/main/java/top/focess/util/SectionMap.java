@@ -7,7 +7,9 @@ import java.util.function.BiFunction;
 
 /**
  * This is an util class to define basic access to the data.
+ * @deprecated FocessUtil is no longer maintained. Do not use.
  */
+@Deprecated(forRemoval = true, since = "1.1.25")
 public interface SectionMap extends Serializable {
 
     /**

@@ -10,7 +10,9 @@ import java.security.spec.X509EncodedKeySpec;
 
 /**
  * This is an RSA util class.
+ * @deprecated FocessUtil is no longer maintained. Do not use.
  */
+@Deprecated(forRemoval = true, since = "1.1.25")
 public class RSA {
 
     private static final int MAX_ENCRYPT_BLOCK = 117;
